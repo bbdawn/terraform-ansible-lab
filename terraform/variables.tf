@@ -1,3 +1,7 @@
+# ## variables.tf
+# - 사용할 변수를 선언한다.
+# --> image_id, flavor_id, network_name, key_pair 등을 선언
+
 variable "gpu_flavor_id" {
   description = "MIG 슬라이스가 포함된 GPU 플레이버 ID"
 }

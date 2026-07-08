@@ -1,4 +1,4 @@
-#  Terraform File
+#  Terraform Files
 ## variables.tf
 - 사용할 변수를 선언한다.
 --> image_id, flavor_id, network_name, key_pair 등을 선언

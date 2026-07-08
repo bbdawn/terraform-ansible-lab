@@ -1,3 +1,8 @@
+# ## main.tf
+# - 리소스를 정의한다.
+# - variables.tf에서 선언한 변수를 사용하여 인프라를 구성한다.
+# - --> GPU VM, Qdrant VM 생성
+
 terraform {
   required_providers {
     openstack = {
