@@ -1,14 +1,13 @@
 terraform {
   required_providers {
     openstack = {
-      source  = "terraform-provider-openstack/openstack"
-      version = "~> 1.53"
+      source = "terraform-provider-openstack/openstack"
     }
   }
 }
 
 provider "openstack" {
-  cloud = "openstack"  # ~/.config/openstack/clouds.yaml 참조
+  cloud = "openstack" # ~/.config/openstack/clouds.yaml 참조
 }
 
 # GPU 인스턴스 (Ollama 실행)
