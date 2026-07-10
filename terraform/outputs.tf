@@ -3,12 +3,12 @@
 # - 다른 Terraform 설정이나 스크립트(Ansible 등)에서 사용할 값을 정의한다.
 # - --> gpu_ip, qdrant_ip 출력
 
-output "gpu_ip" {
-  value       = openstack_compute_instance_v2.gpu.access_ip_v4
-  description = "GPU 인스턴스 IP (Ansible inventory에 사용)"
+output "pool_member_1_ip" {
+  value       = openstack_compute_instance_v2.pool-member-1.access_ip_v4
+  description = "pool member 1 IP (Ansible inventory에 사용)"
 }
 
-output "qdrant_ip" {
-  value       = openstack_compute_instance_v2.qdrant.access_ip_v4
-  description = "Qdrant 인스턴스 IP"
+output "pool_member_2_ip" {
+  value       = openstack_compute_instance_v2.pool-member-2.access_ip_v4
+  description = "pool member 2 IP (Ansible inventory에 사용)"
 }

@@ -1,7 +1,7 @@
 # ## main.tf
 # - 리소스를 정의한다.
 # - variables.tf에서 선언한 변수를 사용하여 인프라를 구성한다.
-# - --> GPU VM, Qdrant VM 생성
+# - --> pool-member-1, pool-member-2 생성
 
 terraform {
   required_providers {
@@ -11,34 +11,41 @@ terraform {
   }
 }
 
+# vi ~/.config/openstack/clouds.yaml
 provider "openstack" {
   cloud = "openstack" # ~/.config/openstack/clouds.yaml 참조
 }
 
-# GPU 인스턴스 (Ollama 실행)
-resource "openstack_compute_instance_v2" "gpu" {
-  name      = "rag-gpu"
-  flavor_id = var.gpu_flavor_id
-  image_id  = var.image_id
-  key_pair  = var.key_pair
+# loadbalancer pool member1로 사용할 인스턴스
+resource "openstack_compute_instance_v2" "pool-member-1" {
+  name      = "pool-member-1"
+  flavor_id = var.flavor_id
 
-  network {
-    name = var.network_name
+  block_device {
+    uuid                  = var.image_id
+    source_type           = "image"
+    destination_type      = "volume"
+    volume_size           = var.volume_size
+    boot_index            = 0
+    delete_on_termination = true
   }
 
-  security_groups = ["default", "ollama-access"]
+  network {
+    uuid = var.network_id
+  }
+
+  security_groups = ["default"]
 }
 
-# 일반 인스턴스 (Qdrant 실행)
-resource "openstack_compute_instance_v2" "qdrant" {
-  name      = "rag-qdrant"
+# loadbalancer pool member2로 사용할 인스턴스
+resource "openstack_compute_instance_v2" "pool-member-2" {
+  name      = "pool-member-2"
   flavor_id = var.flavor_id
   image_id  = var.image_id
-  key_pair  = var.key_pair
 
   network {
-    name = var.network_name
+    uuid = var.network_id
   }
 
-  security_groups = ["default", "qdrant-access"]
+  security_groups = ["default"]
 }
