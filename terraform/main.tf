@@ -41,7 +41,15 @@ resource "openstack_compute_instance_v2" "pool-member-1" {
 resource "openstack_compute_instance_v2" "pool-member-2" {
   name      = "pool-member-2"
   flavor_id = var.flavor_id
-  image_id  = var.image_id
+
+  block_device {
+    uuid                  = var.image_id
+    source_type           = "image"
+    destination_type      = "volume"
+    volume_size           = var.volume_size
+    boot_index            = 0
+    delete_on_termination = true
+  }
 
   network {
     uuid = var.network_id
