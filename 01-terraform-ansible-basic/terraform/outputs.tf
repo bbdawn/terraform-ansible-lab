@@ -12,3 +12,13 @@ output "pool_member_2_ip" {
   value       = openstack_compute_instance_v2.pool-member-2.access_ip_v4
   description = "pool member 2 IP (Ansible inventory에 사용)"
 }
+
+output "pool_member_3_ip" {
+  value       = openstack_compute_instance_v2.pool-member-3.access_ip_v4
+  description = "pool member 1 IP (Ansible inventory에 사용)"
+}
+
+output "pool_member_4_ip" {
+  value       = openstack_compute_instance_v2.pool-member-4.access_ip_v4
+  description = "pool member 2 IP (Ansible inventory에 사용)"
+}
