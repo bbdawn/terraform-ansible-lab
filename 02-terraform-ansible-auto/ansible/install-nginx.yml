@@ -1,0 +1,45 @@
+# ansible > install-nginx.yml
+# pool_members 그룹의 모든 서버에 nginx를 설치하고 실행하는 Playbook
+
+---
+- name: Configure DNS and install nginx
+  hosts: pool_members
+  become: yes
+
+  pre_tasks:
+    - name: Wait for SSH connection
+      wait_for_connection:
+        timeout: 300
+        sleep: 5
+
+  tasks:
+    - name: Configure DNS
+      copy:
+        dest: /etc/resolv.conf
+        content: |
+          nameserver 8.8.8.8
+
+    - name: Stop unattended-upgrades service
+      systemd:
+        name: unattended-upgrades
+        state: stopped
+      ignore_errors: yes
+
+    - name: Disable unattended-upgrades service
+      systemd:
+        name: unattended-upgrades
+        enabled: no
+      ignore_errors: yes
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+        lock_timeout: 300
+
+    - name: Start nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
