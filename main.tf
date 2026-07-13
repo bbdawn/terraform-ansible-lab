@@ -32,7 +32,7 @@ provider "openstack" {
 resource "openstack_compute_instance_v2" "pool-member-1" {
   name      = "pool-member-1"
   flavor_id = var.flavor_id
-  key_pair = var.key_pair
+  key_pair  = var.key_pair
 
   user_data = <<EOF
 #cloud-config
@@ -61,7 +61,7 @@ EOF
 resource "openstack_compute_instance_v2" "pool-member-2" {
   name      = "pool-member-2"
   flavor_id = var.flavor_id
-  key_pair = var.key_pair
+  key_pair  = var.key_pair
 
   user_data = <<EOF
 #cloud-config
