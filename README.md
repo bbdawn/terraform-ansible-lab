@@ -6,14 +6,14 @@
 ## main.tf
 - 리소스를 정의한다. 
 - variables.tf에서 선언한 변수를 사용하여 인프라를 구성한다.
-- --> GPU VM, Qdrant VM 생성
+- --> pool-member-1, pool-member-2 VM 생성 + ansible inventory 자동 생성 + ansible-playbook 자동 실행
 ## terraform.tfvars
 - 변수의 실제 값을 정의한다.
 - --> 실제 image_id, flavor_id, network_name 값 입력
 ## outputs.tf
 - 생성된 리소스의 정보를 출력한다. 
 - 다른 Terraform 설정이나 스크립트(Ansible 등)에서 사용할 값을 정의한다. 
-- --> gpu_ip, qdrant_ip 출력
+- --> pool_member_ips (pool-member-1, pool-member-2의 IP) 출력
 
 
 
