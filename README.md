@@ -5,7 +5,7 @@ Terraform으로 OpenStack VM을 프로비저닝하고 Ansible로 서버 환경�
 
 ## 구성
 
-```
+``` 
 terraform-ansible-lab/
 ├── 01-terraform-ansible-basic/    # 기본 실습: VM 생성 + DNS 설정 + nginx 설치
 │   ├── terraform/                 # OpenStack VM 프로비저닝
@@ -57,7 +57,7 @@ ansible-playbook -i inventory.ini site.yml
 ```
 
 ## 02-terraform-ansible-auto
-01을 기반으로 자동화 수준을 높이는 고도화 실습입니다. (작업 중)
+Terraform·Ansible를 활용한 Pool Member 자동 구축 및 테스트 환경 구성 실습입니다. 
 
 `terraform apply` 한 번으로 VM 생성 → Ansible inventory 자동 생성 → nginx 설치까지 이어지도록 구성합니다.
 
@@ -89,6 +89,14 @@ terraform output pool_member_ips
 curl http://<pool-member-1_IP>/   # 🚀 VM1 Blue Server
 curl http://<pool-member-2_IP>/   # 🔥 VM2 Red Server
 ```
+
+`install-nginx.yml` 실행 결과:
+
+![ansible-playbook install-nginx.yml 실행 결과](02-terraform-ansible-auto/images/ansible-playbook-run.png)
+
+브라우저로 접속하면 pool-member-1은 파란색, pool-member-2는 빨간색 화면으로 구분된다:
+
+![pool-member-1(Blue), pool-member-2(Red) 페이지](02-terraform-ansible-auto/images/pool-member-pages.png)
 
 ### 트러블슈팅 기록
 - **SSH 인증 실패 (`Permission denied`)**: Ubuntu 22.04 이미지는 `root` 직접 SSH 로그인이 막혀 있음.
