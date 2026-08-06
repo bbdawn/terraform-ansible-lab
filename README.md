@@ -23,8 +23,19 @@ terraform-ansible-lab/
 │           └── handlers/main.yml
 │
 └── 02-terraform-ansible-auto/     # 고도화 실습 (진행 중)
-    ├── terraform/
-    └── ansible/
+    ├── terraform/                 # OpenStack VM 프로비저닝 + Ansible 자동 실행
+    │   ├── main.tf                # VM 생성 + inventory.ini 자동 생성 + ansible-playbook 자동 실행
+    │   ├── variables.tf
+    │   ├── outputs.tf
+    │   ├── deploy.sh               # terraform init/fmt/validate/plan/apply 자동 실행 스크립트
+    │   └── terraform.tfvars       # (gitignore, 실제 값은 로컬에서 관리)
+    ├── ansible/                   # DNS 설정 및 nginx 설치
+    │   ├── ansible.cfg
+    │   ├── inventory.ini           # terraform이 자동 생성 (수동 편집 불필요)
+    │   ├── install-nginx.yml
+    │   └── site.yml
+    └── shell-script/               # deploy.sh 작성 실습
+        └── deploy.sh
 ```
 
 ## 01-terraform-ansible-basic
@@ -44,6 +55,31 @@ ansible-playbook -i inventory.ini site.yml
 
 ## 02-terraform-ansible-auto
 01을 기반으로 자동화 수준을 높이는 고도화 실습입니다. (작업 중)
+
+`terraform apply` 한 번으로 VM 생성 → Ansible inventory 자동 생성 → nginx 설치까지 이어지도록 구성합니다.
+
+- `terraform/main.tf`
+  - `pool-member-1`, `pool-member-2` VM 생성
+  - `local_file` 리소스로 VM IP를 읽어서 `ansible/inventory.ini` 자동 생성
+  - `null_resource` + `local-exec` provisioner로 `ansible-playbook install-nginx.yml` 자동 실행
+
+사용법
+```bash
+# 1. Terraform으로 VM 생성 + Ansible 자동 실행
+cd 02-terraform-ansible-auto/terraform
+terraform init
+terraform apply
+
+# (Ansible만 따로 다시 실행하고 싶을 때)
+cd ../ansible
+ansible-playbook -i inventory.ini install-nginx.yml
+```
+
+### 트러블슈팅 기록
+- **SSH 인증 실패 (`Permission denied`)**: Ubuntu 22.04 이미지는 `root` 직접 SSH 로그인이 막혀 있음.
+  → `inventory.ini`의 `ansible_user`를 `root` → `ubuntu`로 변경하고, sudo 권한 상승을 위해 `ansible_become=true` 추가.
+- **`private_key_file`이 적용 안 되던 문제**: `ansible.cfg`에서 `private_key_file` 옵션을 `[ssh_connection]` 섹션에 뒀더니 무시됨.
+  → `[defaults]` 섹션으로 이동해야 정상 적용됨. 또한 `%(HOME)s` 보간이 동작하지 않아 `~/.ssh/<keypair>.pem` 형태로 변경.
 
 ## 환경
 - OpenStack VM (Ubuntu 22.04)
