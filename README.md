@@ -1,4 +1,5 @@
 #  Terraform Files
+
 ## variables.tf
 - 사용할 변수를 선언한다.
 --> image_id, flavor_id, network_name, key_pair 등을 선언
@@ -14,30 +15,9 @@
 - 다른 Terraform 설정이나 스크립트(Ansible 등)에서 사용할 값을 정의한다. 
 - --> gpu_ip, qdrant_ip 출력
 
-variables.tf
-│
-▼
-terraform.tfvars
-│
-▼
-main.tf
-│
-terraform apply
-│
-▼
-OpenStack에 리소스 생성
-│
-▼
-outputs.tf
-│
-▼
-terraform output
-
 
 
 # Terraform 명령어
-
-
 $ terraform init
 $ terraform fmt
 $ terraform validate
