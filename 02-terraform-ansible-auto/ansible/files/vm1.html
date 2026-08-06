@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>VM1 - Blue Server</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #2f86d6 0%, #1e5fa8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .title {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .subtitle {
+            font-size: 22px;
+            margin-bottom: 50px;
+            opacity: 0.95;
+            letter-spacing: 4px;
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .manila-section {
+            display: inline-block;
+            animation: fadeInScale 1s ease 0.3s backwards;
+        }
+
+        .manila-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .manila-icon {
+            font-size: 18px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .manila-box {
+            position: relative;
+            padding: 30px 40px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            min-width: 400px;
+            transition: all 0.3s ease;
+        }
+
+        .manila-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .manila-box.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                transparent 100%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        .manila-content {
+            font-size: 16px;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        .manila-content.error {
+            color: #ffcccb;
+            font-style: italic;
+        }
+
+        .manila-content.success {
+            color: #e8f5e9;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: blink 2s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        .status-indicator.loading {
+            background: #ffc107;
+        }
+
+        .status-indicator.error {
+            background: #f44336;
+            animation: none;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 0.95;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="title">🚀 VM1</div>
+        <div class="subtitle">BLUE SERVER</div>
+
+        <div class="manila-section">
+            <div class="manila-label">
+                <span class="manila-icon">📁</span>
+                Manila Shared Storage
+            </div>
+            <div class="manila-box loading" id="manila-box">
+                <div class="manila-content">
+                    <span class="status-indicator loading" id="status"></span>
+                    <pre id="shared">manila 공유 파일을 불러오는 중...</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sharedElement = document.getElementById('shared');
+        const statusElement = document.getElementById('status');
+        const manilaBox = document.getElementById('manila-box');
+
+        fetch('/share/test.txt')
+            .then(res => {
+                if (!res.ok) throw new Error('File not found');
+                return res.text();
+            })
+            .then(data => {
+                setTimeout(() => {
+                    manilaBox.classList.remove('loading');
+                    statusElement.classList.remove('loading');
+                    sharedElement.classList.remove('error');
+                    sharedElement.classList.add('success');
+                    sharedElement.innerText = data;
+                }, 500);
+            })
+            .catch(() => {
+                setTimeout(() => {
+                    manilaBox.classList.remove('loading');
+                    statusElement.classList.remove('loading');
+                    statusElement.classList.add('error');
+                    sharedElement.classList.add('error');
+                    sharedElement.innerText = "❌ manila 공유 파일을 연동해주세요";
+                }, 500);
+            });
+    </script>
+
+</body>
+</html>

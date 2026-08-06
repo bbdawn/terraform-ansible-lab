@@ -29,11 +29,14 @@ terraform-ansible-lab/
     │   ├── outputs.tf
     │   ├── deploy.sh               # terraform init/fmt/validate/plan/apply 자동 실행 스크립트
     │   └── terraform.tfvars       # (gitignore, 실제 값은 로컬에서 관리)
-    ├── ansible/                   # DNS 설정 및 nginx 설치
+    ├── ansible/                   # DNS 설정 및 nginx 설치 + pool member별 페이지 배포
     │   ├── ansible.cfg
     │   ├── inventory.ini           # terraform이 자동 생성 (수동 편집 불필요)
     │   ├── install-nginx.yml
-    │   └── site.yml
+    │   ├── site.yml
+    │   └── files/                  # pool member별로 배포할 index.html
+    │       ├── vm1.html            # pool-member-1 전용 (Blue Server)
+    │       └── vm2.html            # pool-member-2 전용 (Red Server)
     └── shell-script/               # deploy.sh 작성 실습
         └── deploy.sh
 ```
@@ -62,6 +65,12 @@ ansible-playbook -i inventory.ini site.yml
   - `pool-member-1`, `pool-member-2` VM 생성
   - `local_file` 리소스로 VM IP를 읽어서 `ansible/inventory.ini` 자동 생성
   - `null_resource` + `local-exec` provisioner로 `ansible-playbook install-nginx.yml` 자동 실행
+- `ansible/install-nginx.yml`
+  - nginx 설치 및 기동 이후, `vars.poolmember_pages`로 인벤토리 호스트명과 파일을 매핑해
+    `pool-member-1` → `files/vm1.html`, `pool-member-2` → `files/vm2.html`을
+    각 서버의 `/var/www/html/index.html`로 배포
+  - 접속 시 `pool-member-1`은 파란색(Blue) 화면, `pool-member-2`는 빨간색(Red) 화면을 보여줘
+    로드밸런서 pool member 동작을 눈으로 구분해서 확인할 수 있음
 
 사용법
 ```bash
@@ -73,6 +82,12 @@ terraform apply
 # (Ansible만 따로 다시 실행하고 싶을 때)
 cd ../ansible
 ansible-playbook -i inventory.ini install-nginx.yml
+
+# 3. 결과 확인 (IP 조회 후 각 pool member 페이지 확인)
+cd ../terraform
+terraform output pool_member_ips
+curl http://<pool-member-1_IP>/   # 🚀 VM1 Blue Server
+curl http://<pool-member-2_IP>/   # 🔥 VM2 Red Server
 ```
 
 ### 트러블슈팅 기록

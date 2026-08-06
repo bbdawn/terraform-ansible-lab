@@ -6,6 +6,12 @@
   hosts: pool_members
   become: yes
 
+  vars:
+    # 인벤토리 호스트명 -> 각 pool member 전용 페이지 매핑
+    poolmember_pages:
+      pool-member-1: vm1.html
+      pool-member-2: vm2.html
+
   pre_tasks:
     - name: Wait for SSH connection
       wait_for_connection:
@@ -43,3 +49,12 @@
         name: nginx
         state: started
         enabled: yes
+
+    - name: Deploy pool member index page (vm1.html -> pool-member-1, vm2.html -> pool-member-2)
+      copy:
+        src: "files/{{ poolmember_pages[inventory_hostname] }}"
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+      when: inventory_hostname in poolmember_pages
