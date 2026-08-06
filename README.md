@@ -36,6 +36,16 @@ terraform output
 
 
 # Terraform 명령어
+
+
+$ terraform init
+$ terraform fmt
+$ terraform validate
+$ terraform validate
+$ terraform plan
+$ terraform apply
+
+
 ## init 
 - 초기화
 - terraform init

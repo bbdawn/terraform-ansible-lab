@@ -96,8 +96,9 @@ pool-member-1 ansible_host=${openstack_compute_instance_v2.pool-member-1.access_
 pool-member-2 ansible_host=${openstack_compute_instance_v2.pool-member-2.access_ip_v4}
 
 [pool_members:vars]
-ansible_user=root
+ansible_user=ubuntu
 ansible_connection=ssh
+ansible_become=true
 EOF
 
 }
